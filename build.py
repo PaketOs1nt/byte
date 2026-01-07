@@ -3,7 +3,7 @@ import subprocess
 
 NAME = "byte"
 
-LIB_MODULES = ["heap", "obj", "types/bint"]
+LIB_MODULES = ["heap", "obj", "exec", "types/bint"]
 LIB_MAIN = "byte.d"
 
 MODULES = []
