@@ -1,0 +1,6 @@
+import std;
+
+class Node
+{
+
+}

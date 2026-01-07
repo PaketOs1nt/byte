@@ -3,10 +3,10 @@ import subprocess
 
 NAME = "byte"
 
-LIB_MODULES = ["heap", "obj", "exec", "types/bint"]
+LIB_MODULES = ["heap", "obj", "exec", "types/bint", "types/bbool", "types/bstr"]
 LIB_MAIN = "byte.d"
 
-MODULES = []
+MODULES = ["header"]
 MAIN = "byte.d"
 
 subprocess.run(

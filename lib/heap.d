@@ -1,4 +1,6 @@
 module lib.heap;
+
+import lib.obj;
 import core.stdc.stdlib;
 
 struct Heap
@@ -6,6 +8,7 @@ struct Heap
     ubyte* mem;
     size_t size;
     size_t used;
+    BObject* none;
 }
 
 extern (C) Heap heapInit(size_t size)
@@ -14,6 +17,11 @@ extern (C) Heap heapInit(size_t size)
     heap.mem = cast(ubyte*) calloc(1, size);
     heap.size = size;
     heap.used = 0;
+
+    heap.none = cast(BObject*) heap.heapAlloc(BObject.sizeof);
+    heap.none.ptr = heap.heapAlloc(1);
+    heap.none.type = BTypes.None;
+
     return heap;
 }
 

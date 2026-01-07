@@ -3,8 +3,14 @@ module lib.exec;
 import lib.obj;
 import lib.heap;
 
+import lib.types.bbool;
+import lib.types.bint;
+import lib.types.bstr;
+
 import core.stdc.stdlib;
 import core.stdc.stdio;
+
+extern (C) void* memcpy(void* dest, const void* src, size_t n);
 
 struct Stack
 {
@@ -41,13 +47,65 @@ enum Op
     POP_TOP,
     FLAG,
     PUSH_OBJ,
-    USE_OP
+    PUSH_CONST,
+    USE_OP,
+    TO
 }
 
 struct Code
 {
     ubyte* bytecode;
     size_t size;
+    BObject** consts;
+    size_t consts_len;
+}
+
+extern (C) Code codeImport(ref Heap heap, char* path)
+{
+    FILE* f = fopen(path, "rb");
+    if (!f)
+        return Code();
+
+    fseek(f, 0, SEEK_END);
+    long size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    ubyte* buffer = cast(ubyte*) malloc(size);
+    if (!buffer)
+    {
+        fclose(f);
+        return Code();
+    }
+
+    fread(buffer, 1, size, f);
+    fclose(f);
+
+    size_t ptr = 0;
+
+    Code code = Code();
+    code.consts_len = buffer[ptr++];
+    code.consts = cast(BObject**) heap.heapAlloc(code.consts_len * size_t.sizeof);
+
+    size_t scanned_consts = 0;
+
+    while (scanned_consts < code.consts_len)
+    {
+        BTypes type = cast(BTypes) buffer[ptr++];
+
+        size_t const_size;
+        memcpy(&const_size, buffer + ptr, size_t.sizeof);
+        ptr += size_t.sizeof;
+
+        BObject* obj = heap.bobjectFromRaw(buffer + ptr, const_size, type);
+
+        code.consts[scanned_consts] = obj;
+        scanned_consts++;
+    }
+    ptr++;
+    code.size = size - ptr;
+    code.bytecode = buffer + ptr;
+
+    return code;
 }
 
 struct Executor
@@ -96,7 +154,10 @@ extern (C) void executorRun(ref Executor executor, Code code)
                 while (executor.stack.pos > 0)
                 {
                     BObject* obj = executor.stack.stackPop();
-                    printf("| type: %i\t0x%p\t |\n", obj.type, obj.ptr);
+                    BObject* objstr = executor.heap.bobjectTo(obj, BTypes.Str);
+                    printf("| type: %i\t0x%p\t |\n", objstr.type, objstr.ptr);
+                    printf("str: %s", objstr.strget());
+
                 }
             break;
 
@@ -104,10 +165,21 @@ extern (C) void executorRun(ref Executor executor, Code code)
             executor.stack.stackPush(executor.heap.bobjectNew(cast(BTypes) arg));
             break;
 
+        case Op.PUSH_CONST:
+            executor.stack.stackPush(code.consts[arg]);
+            break;
+
         case Op.USE_OP:
             BObject* b = executor.stack.stackPop();
             BObject* a = executor.stack.stackPop();
             executor.stack.stackPush(executor.heap.bobjectOp(a, b, cast(UseOp) arg));
+            break;
+
+        case Op.TO:
+            executor.stack.stackPush(executor.heap.bobjectTo(
+                    executor.stack.stackPop(),
+                    cast(BTypes) arg
+            ));
             break;
         }
 
