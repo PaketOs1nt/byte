@@ -11,7 +11,7 @@ extern (C) int main(int argc, char** argv)
     {
         char* path = argv[argc - 1];
 
-        Executor executor = executorInit(1024, 64);
+        Executor executor = executorInit(1024 * 1024 * 16, 64);
         Code code = executor.heap.codeImport(path);
         executor.executorRun(code);
     }
