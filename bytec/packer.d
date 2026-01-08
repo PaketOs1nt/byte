@@ -3,20 +3,20 @@ module bytec.packer;
 import std;
 import bytec.structs;
 
+void pack_size_t(ref ubyte[] result, size_t v)
+{
+    foreach (i; 0 .. size_t.sizeof)
+    {
+        result ~= cast(ubyte)((v >> (i * 8)) & 0xFF);
+    }
+}
+
 struct Packed
 {
     size_t consts_len = 0;
     ubyte[] consts_bin = [];
 
     ubyte[] code_bin = [];
-
-    void pack_size_t(ref ubyte[] result, size_t v)
-    {
-        foreach (i; 0 .. size_t.sizeof)
-        {
-            result ~= cast(ubyte)((v >> (i * 8)) & 0xFF);
-        }
-    }
 
     void pack_const(BTypes type, ubyte[] data)
     {
@@ -28,7 +28,7 @@ struct Packed
 
     void pack_code(ubyte[] bytecode)
     {
-        code_bin = bytecode;
+        code_bin ~= bytecode;
     }
 
     ubyte[] compile()

@@ -97,11 +97,11 @@ extern (C) Code codeImport(ref Heap heap, char* path)
         ptr += size_t.sizeof;
 
         BObject* obj = heap.bobjectFromRaw(buffer + ptr, const_size, type);
+        ptr += const_size;
 
         code.consts[scanned_consts] = obj;
         scanned_consts++;
     }
-    ptr++;
     code.size = size - ptr;
     code.bytecode = buffer + ptr;
 
@@ -150,15 +150,18 @@ extern (C) void executorRun(ref Executor executor, Code code)
 
         case Op.FLAG:
             printf("pos: %u, arg: %u\n", cast(uint) executor.pos, cast(uint) arg);
+
             if (arg == 255)
+            {
+                size_t saved = executor.stack.pos;
                 while (executor.stack.pos > 0)
                 {
                     BObject* obj = executor.stack.stackPop();
                     BObject* objstr = executor.heap.bobjectTo(obj, BTypes.Str);
-                    printf("| type: %i\t0x%p\t |\n", objstr.type, objstr.ptr);
-                    printf("str: %s", objstr.strget());
-
+                    printf("| type: %i\t0x%p\t str: %s\n", objstr.type, objstr.ptr, objstr.strget());
                 }
+                executor.stack.pos = saved;
+            }
             break;
 
         case Op.PUSH_OBJ:

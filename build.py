@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 
 NAME = "byte"
 
@@ -9,7 +10,7 @@ LIB_MAIN = "byte.d"
 MODULES = ["header"]
 MAIN = "byte.d"
 
-COMPILER_MODULES = ["ast", "packer", "structs", "tokens"]
+COMPILER_MODULES = ["ast", "packer", "structs", "tokens", "basm"]
 COMPILER = "main.d"
 
 subprocess.run(
@@ -57,3 +58,11 @@ subprocess.run(
         f"-of{NAME}c.exe",
     ]
 )
+
+time.sleep(0.5)
+
+try:
+    os.remove("bytec.obj")
+    os.remove("byte.obj")
+except Exception as e:
+    print(e)
