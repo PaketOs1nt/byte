@@ -1,3 +1,4 @@
+module bytec.tokens;
 import std;
 
 enum TokenType

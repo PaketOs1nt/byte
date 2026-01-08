@@ -9,6 +9,9 @@ LIB_MAIN = "byte.d"
 MODULES = ["header"]
 MAIN = "byte.d"
 
+COMPILER_MODULES = ["ast", "packer", "structs", "tokens"]
+COMPILER = "main.d"
+
 subprocess.run(
     [
         "ldc2",
@@ -38,5 +41,19 @@ subprocess.run(
         *[os.path.join("main", mod) for mod in MODULES],
         os.path.join("main", MAIN),
         f"-of{NAME}.exe",
+    ]
+)
+
+subprocess.run(
+    [
+        "ldc2",
+        "-release",
+        "-static",
+        "-flto=full",
+        "-O3",
+        "-disable-red-zone",
+        *[os.path.join(NAME + "c", mod) for mod in COMPILER_MODULES],
+        os.path.join(NAME + "c", COMPILER),
+        f"-of{NAME}c.exe",
     ]
 )

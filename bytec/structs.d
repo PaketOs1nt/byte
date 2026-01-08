@@ -1,4 +1,4 @@
-import std;
+module bytec.structs;
 
 enum Op
 {
@@ -24,9 +24,4 @@ enum BTypes
 enum UseOp
 {
     ADD
-}
-
-void main(int argc, char** argv)
-{
-
 }
