@@ -64,22 +64,27 @@ Packed compile_asm(string code)
     Instr instr = Instr();
     Const bconst = Const();
 
+    bool hasInstr = false;
+    bool hasConst = false;
+
     foreach (Token t; tokens)
     {
         if (t.type == TokenType.NEW_LINE)
         {
             iscomm = false;
-            if (instr != Instr())
+            if (hasInstr)
             {
                 //writeln("packed instr ", instr);
                 packed.pack_code(instr.compile());
                 instr = Instr();
+                hasInstr = false;
             }
-            if (bconst != Const())
+            if (hasConst)
             {
                 //writeln("packed const ", bconst);
                 packed.pack_const(bconst.type, bconst.raw);
                 bconst = Const();
+                hasConst = false;
             }
         }
         if (t.type == TokenType.OTHER && t.str == "#")
@@ -123,11 +128,13 @@ Packed compile_asm(string code)
                 if (ctx == ctx.CODE_OP)
                 {
                     instr.op = op_from_str(t.str);
+                    hasInstr = true;
                     ctx = ctx.CODE_ARG;
                 }
                 else if (ctx == ctx.CODE_ARG)
                 {
                     instr.arg = cast(ubyte) type_from_str(t.str);
+                    hasInstr = true;
                     ctx = ctx.CODE_OP;
                 }
             }
@@ -136,11 +143,13 @@ Packed compile_asm(string code)
                 if (ctx == ctx.CONST_TYPE)
                 {
                     bconst.type = type_from_str(t.str);
+                    hasConst = true;
                     ctx = ctx.CONST_DATA;
                 }
                 else if (ctx == ctx.CONST_DATA)
                 {
                     bconst.raw = [cast(ubyte) to!bool(t.str)];
+                    hasConst = true;
                     ctx = ctx.CONST_TYPE;
                 }
             }
@@ -152,11 +161,13 @@ Packed compile_asm(string code)
             {
                 //writeln("int instr arg ", to!int(t.str));
                 instr.arg = cast(ubyte) to!int(t.str);
+                hasInstr = true;
                 ctx = ctx.CODE_OP;
             }
             else if (section == Section.CONSTS && ctx == ctx.CONST_DATA)
             {
                 bconst.raw = int_to_bytes(to!int(t.str));
+                hasConst = true;
                 ctx = ctx.CONST_TYPE;
             }
         }

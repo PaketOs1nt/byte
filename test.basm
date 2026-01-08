@@ -1,12 +1,12 @@
 .consts:
-int 1
+    int  1
 
 .code:
-push_const 0  # загрузка 1
-push_const 0  # загрузка 1
-use_op 0      # push(pop + pop)
-flag 255      # для дебага
-pos_sub 3     # jmp current-3
-
-# до какого примерно числа досчитает интерпритатор
-# пока не кончиться память? память: 1 кб, размер стека: 64
+    push_const 0          # int  1
+    push_const 0          # int  1
+    pos_add    4
+    nop        0
+    pos_add    3
+    nop        0
+    use_op     add
+    flag       255

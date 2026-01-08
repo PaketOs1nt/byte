@@ -66,6 +66,8 @@ Op op_from_str(string str)
         return Op.POS_ADD;
     case "pos_sub":
         return Op.POS_SUB;
+    case "nop":
+        return Op.NOP;
     default:
         return Op.NOP;
     }

@@ -18,7 +18,7 @@ subprocess.run(
         "ldc2",
         "-shared",
         "-release",
-        "-static",
+        # "-static",
         "-flto=full",
         "-O3",
         "-disable-red-zone",
@@ -34,7 +34,7 @@ subprocess.run(
     [
         "ldc2",
         "-release",
-        "-static",
+        # "-static",
         "-flto=full",
         "-O3",
         "-disable-red-zone",
@@ -49,7 +49,7 @@ subprocess.run(
     [
         "ldc2",
         "-release",
-        "-static",
+        # "-static",
         "-flto=full",
         "-O3",
         "-disable-red-zone",
