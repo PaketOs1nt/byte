@@ -158,7 +158,7 @@ extern (C) void executorRun(ref Executor executor, Code code)
                 {
                     BObject* obj = executor.stack.stackPop();
                     BObject* objstr = executor.heap.bobjectTo(obj, BTypes.Str);
-                    printf("| type: %i\t0x%p\t str: %s\n", objstr.type, objstr.ptr, objstr.strget());
+                    printf("stack | type: %i\t0x%p\t str: %s\n", objstr.type, objstr.ptr, objstr.strget());
                 }
                 executor.stack.pos = saved;
             }

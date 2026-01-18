@@ -4,9 +4,6 @@
 .code:
     push_const 0          # int  1
     push_const 0          # int  1
-    pos_add    4
-    nop 0
-    pos_add    3
-    nop 0
-    use_op     add
+    use_op     0
     flag       255
+    pos_sub    3
